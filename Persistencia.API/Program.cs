@@ -1,7 +1,6 @@
 using Compartilhado;
 using Persistencia.API;
 
-
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddSingleton(x =>
