@@ -1,0 +1,33 @@
+name: CI/CD - Persistência API
+on: [push]
+
+env:
+  IMAGE_NAME: persistencia-api
+  REGISTRY: docker.io
+  DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASS: ${{ secrets.DOCKER_PASSWORD }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v3
+
+    - name: Configurar .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restaurar dependências
+      run: dotnet restore
+
+    - name: Build do projeto
+      run: dotnet build --configuration Release
+
+    - name: Publicar imagem Docker
+      run: |
+        echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
+        docker build -t $DOCKER_USER/$IMAGE_NAME:latest .
+        docker push $DOCKER_USER/$IMAGE_NAME:latest
